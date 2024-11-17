@@ -1,5 +1,6 @@
 package tests;
 
+import io.qameta.allure.Owner;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matcher;
 import org.junit.jupiter.api.DisplayName;
@@ -8,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-public class LoginTest {
+@Owner("Denis Gubert")
+public class LoginTest extends BaseTest {
 
-    String loginUrl = "https://reqres.in/api/login";
+    String loginUrl = "login";
 
     @Test
     @DisplayName("Запрос с некорректными данными авторизации")
@@ -31,34 +33,16 @@ public class LoginTest {
     }
 
     @Test
-    @DisplayName("Запрос с некорректными данными авторизации")
-    void userNotFoundTest1() {
-        given()
-                .body("{\n" +
-                        "  \"username\": \"\",\n" +
-                        "  \"email\": \"\",\n" +
-                        "  \"password\": \"\"\n" +
-                        "}")
-                .contentType(ContentType.JSON)
-                .when()
-                .post(loginUrl)
-                .then()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("user not found"));
-    }
-
-    @Test
     @DisplayName("Запрос без указания body")
     void missingEmailOrUsernameTest() {
         given()
-                .contentType(ContentType.JSON)
+                    .contentType(ContentType.JSON)
                 .when()
-                .post(loginUrl)
+                    .post(loginUrl)
                 .then()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("Missing email or username"));
+                    .log().body()
+                    .statusCode(400)
+                    .body("error", is("Missing email or username"));
     }
 
     @Test
@@ -66,9 +50,9 @@ public class LoginTest {
     void loginWithoutContentTypeTest() {
         given()
                 .when()
-                .post(loginUrl)
+                    .post(loginUrl)
                 .then()
-                .log().all()
-                .statusCode(415);
+                    .log().all()
+                    .statusCode(415);
     }
 }

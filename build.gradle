@@ -1,0 +1,52 @@
+plugins {
+    id 'java-library'
+    id "io.qameta.allure" version "2.12.0"
+}
+
+repositories {
+    mavenCentral()
+}
+
+allure {
+    report {
+        version.set("2.29.0") //версия Allure Report (https://github.com/allure-framework/allure2)
+    }
+    adapter {
+        aspectjWeaver.set(true) // обработка аннотации @Step
+        frameworks {
+            junit5 {
+                adapterVersion.set("2.29.0") //версия Allure JUnit5 (https://github.com/allure-framework/allure-java)
+            }
+        }
+    }
+}
+
+dependencies {
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter:5.11.3",
+            "org.slf4j:slf4j-simple:2.0.16",
+            "io.qameta.allure:allure-selenide:2.29.0",
+            "io.rest-assured:rest-assured:5.5.0"
+    )
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+
+    testLogging {
+        lifecycle {
+            events "started", "skipped", "failed", "standard_error", "standard_out"
+            exceptionFormat "short"
+        }
+    }
+}
+
+test {
+    jvmArgs = ['-Dorg.slf4j.simpleLogger.defaultLogLevel=WARN']
+    useJUnitPlatform()
+}

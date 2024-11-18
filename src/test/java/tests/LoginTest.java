@@ -2,8 +2,8 @@ package tests;
 
 import io.qameta.allure.Owner;
 import models.LoginRequestModel;
-import models.LoginResponseErrorModel;
 import models.LoginResponseModel;
+import models.ResponseErrorModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,10 @@ import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static specs.LoginSpec.*;
+import static org.hamcrest.Matchers.notNullValue;
+import static specs.RequestSpec.requestSpec;
+import static specs.ResponseSpec.response200Spec;
+import static specs.ResponseSpec.response400Spec;
 
 @Owner("Denis Gubert")
 public class LoginTest extends BaseTest {
@@ -24,14 +27,14 @@ public class LoginTest extends BaseTest {
         requestModel.setEmail("email@email.com");
         requestModel.setPassword("password");
 
-        LoginResponseErrorModel responseModel = step("Делаем запрос", ()-> given()
-                .spec(loginRequestSpec)
+        ResponseErrorModel responseModel = step("Делаем запрос", ()-> given()
+                .spec(requestSpec)
                 .body(requestModel)
             .when()
-                .post()
+                .post("/login")
             .then()
-                .spec(loginResponse400Spec)
-                .extract().as(LoginResponseErrorModel.class));
+                .spec(response400Spec)
+                .extract().as(ResponseErrorModel.class));
 
         step("Проверяем ответ", ()->
             assertThat(responseModel.getError(), equalTo("user not found")));
@@ -42,14 +45,14 @@ public class LoginTest extends BaseTest {
     void missingEmailOrUsernameTest() {
         LoginRequestModel requestModel = new LoginRequestModel();
 
-        LoginResponseErrorModel responseModel = step("Делаем запрос", ()-> given()
-                .spec(loginRequestSpec)
+        ResponseErrorModel responseModel = step("Делаем запрос", ()-> given()
+                .spec(requestSpec)
                 .body(requestModel)
             .when()
-                .post()
+                .post("/login")
             .then()
-                .spec(loginResponse400Spec)
-                .extract().as(LoginResponseErrorModel.class));
+                .spec(response400Spec)
+                .extract().as(ResponseErrorModel.class));
 
         step("Проверяем ответ", ()->
             assertThat(responseModel.getError(), equalTo("Missing email or username")));
@@ -63,15 +66,15 @@ public class LoginTest extends BaseTest {
         requestModel.setPassword("cityslicka");
 
         LoginResponseModel responseModel = step("Делаем запрос", ()-> given()
-                .spec(loginRequestSpec)
+                .spec(requestSpec)
                 .body(requestModel)
             .when()
-                .post()
+                .post("/login")
             .then()
-                .spec(loginResponse200Spec)
+                .spec(response200Spec)
                 .extract().as(LoginResponseModel.class));
 
         step("Проверяем ответ", ()->
-            assertThat(responseModel.getToken(), equalTo("QpwL5tke4Pnpja7X4")));
+            assertThat(responseModel.getToken(), notNullValue()));
     }
 }

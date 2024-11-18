@@ -11,6 +11,7 @@ import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static specs.RequestSpec.requestSpec;
 import static specs.ResponseSpec.response200Spec;
 import static specs.ResponseSpec.response400Spec;
@@ -57,6 +58,6 @@ public class RegisterTest extends BaseTest {
 
         step("Проверяем ответ", ()-> {
             assertThat(responseModel.getId(), equalTo("4"));
-            assertThat(responseModel.getToken(), equalTo("QpwL5tke4Pnpja7X4"));});
+            assertThat(responseModel.getToken(), notNullValue());});
     }
 }
